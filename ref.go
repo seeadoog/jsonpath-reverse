@@ -1,15 +1,16 @@
 package jsonref
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"strconv"
 	"encoding/json"
 )
 
-type Lex struct {
-	tokens []string
-	lexss string
+type QueryProp struct {
+	Query string
+	Value interface{}
 }
 
 const (
@@ -31,7 +32,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 	if err !=nil{
 		return err
 	}
-	var cp map[string]interface{} = src
+	var cp = src
 	for k,v:=range tks{
 		if k==0{
 			continue
@@ -46,13 +47,21 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 				if cp[field]==nil{
 					cp[field]= map[string]interface{}{}
 				}
-				cp = cp[field].(map[string]interface{})
+				cpm,ok := cp[field].(map[string]interface{})
+				if !ok{
+					return errors.New("cannot convert_ to map")
+				}
+				cp = cpm
 			}else{   //array
 				if cp[field]==nil{
 					cp[field]=make([]map[string]interface{},idx+1)
 				}
 				//arrmp:=cp[field].([]map[string]interface{})
-				lenmap:=len(cp[field].([]map[string]interface{}))
+				cpm,ok:=cp[field].([]map[string]interface{})
+				if !ok{
+					return errors.New("caonnot convert to map")
+				}
+				lenmap:=len(cpm)
 				if lenmap<idx+1{
 					for i:=lenmap;i<idx+1;i++{
 						cp[field]=append(cp[field].([]map[string]interface{}),map[string]interface{}{})
@@ -65,6 +74,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 				}
 				cp = cp[field].([]map[string]interface{})[idx]
 			}
+
 		}else{
 			if idx ==TYPE_KEY{
 				cp[field]=dst
@@ -73,7 +83,11 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 				if cp[field]==nil{
 					cp[field]=make([]interface{},idx+1)
 				}
-				if len(cp[field].([]interface{}))<idx+1{
+				cpm,ok:=cp[field].([]interface{})
+				if !ok{
+					return errors.New("cannot convert to interface")
+				}
+				if len(cpm)<idx+1{
 					for i:=len(cp[field].([]interface{}));i<idx+1;i++{
 						cp[field]= append(cp[field].([]interface{}),1)
 					}
@@ -88,6 +102,18 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 	return nil
 
 }
+
+func Marshals(querys []QueryProp)(tmp map[string]interface{} ,err error){
+	m:=map[string]interface{}{}
+	for _,v:=range querys{
+		if err:=Marshal(v.Query,m,v.Value);err!=nil{
+			return nil,err
+		}
+	}
+	return m,nil
+
+}
+
 
 func yyp(token string)(string,int,error){
 	numidx_start:=0
