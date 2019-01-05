@@ -1,13 +1,11 @@
 package jsonref
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
-	"reflect"
-	"strings"
 	"strconv"
-	"encoding/json"
+	"strings"
 )
 
 type QueryProp struct {
@@ -29,7 +27,7 @@ func MarshalToJson(query string,src map[string]interface{},dst interface{}) ([]b
 
 }
 
-func Marshal(query string,src map[string]interface{}, value interface{}) error {
+func Marshal(query string,src interface{}, value interface{}) error {
 	tks,err:=tokenize(query)
 	if err !=nil{
 		return err
@@ -44,58 +42,71 @@ func Marshal(query string,src map[string]interface{}, value interface{}) error {
 			return err
 		}
 		if k < len(tks)-1{
-			//field
+			//map
 			if idx ==TYPE_KEY{
-				if cp[field]==nil{
-					cp[field]= map[string]interface{}{}
+				cpm ,ok:= cp.(map[string]interface{})
+				if !ok{
+					return errors.New("cannot convert_ to map")
 				}
-				cpm,ok := cp[field].(map[string]interface{})
+				if cpm[field]==nil{
+					cpm[field]= map[string]interface{}{}
+				}
+				cpm,ok = cpm[field].(map[string]interface{})
 				if !ok{
 					return errors.New("cannot convert_ to map")
 				}
 				cp = cpm
 			}else{   //array
-				if cp[field]==nil{
-					cp[field]=make([]map[string]interface{},idx+1)
+				cpm := cp.(map[string]interface{})
+				if cpm[field]==nil{
+					cpm[field]=make([]interface{},idx+1)
 				}
 				//arrmp:=cp[field].([]map[string]interface{})
-				log.Println(reflect.TypeOf(cp[field]))
-				cpm,ok:=cp[field].([]map[string]interface{})
+				//log.Println(reflect.TypeOf(cpm[field]))
+				cps,ok:=cpm[field].([]interface{})
 				if !ok{
 					return errors.New("caonnot convert to map")
 				}
-				lenmap:=len(cpm)
+				lenmap:=len(cps)
 				if lenmap<idx+1{
 					for i:=lenmap;i<idx+1;i++{
-						cp[field]=append(cp[field].([]map[string]interface{}),map[string]interface{}{})
+						cpm[field]=append(cpm[field].([]interface{}),map[string]interface{}{})
 					}
 				}
 				for i:=0;i<idx+1;i++{
-					if cp[field].([]map[string]interface{})[i]==nil{
-						cp[field].([]map[string]interface{})[i]=map[string]interface{}{}
+					if cpm[field].([]interface{})[i]==nil{
+						cpm[field].([]interface{})[i]=map[string]interface{}{}
 					}
 				}
-				cp = cp[field].([]map[string]interface{})[idx]
+				cp = cpm[field].([]interface{})[idx]
 			}
 
 		}else{
 			if idx ==TYPE_KEY{
-				cp[field]= value
+				cpm,ok:=cp.(map[string]interface{})
+				if !ok{
+					return errors.New("cannot convert to map")
+				}
+				cpm[field]= value
 			}else{
 				//todo
-				if cp[field]==nil{
-					cp[field]=make([]interface{},idx+1)
+				if field==""{
+					return errors.New("field is nil")
 				}
-				cpm,ok:=cp[field].([]interface{})
+				cpm,ok:=cp.(map[string]interface{})
+				if cpm[field]==nil{
+					cpm[field]=make([]interface{},idx+1)
+				}
+				cps,ok:=cpm[field].([]interface{})
 				if !ok{
 					return errors.New("cannot convert to interface")
 				}
-				if len(cpm)<idx+1{
-					for i:=len(cp[field].([]interface{}));i<idx+1;i++{
-						cp[field]= append(cp[field].([]interface{}),1)
+				if len(cps)<idx+1{
+					for i:=len(cpm[field].([]interface{}));i<idx+1;i++{
+						cpm[field]= append(cpm[field].([]interface{}),1)
 					}
 				}
-				cp[field].([]interface{})[idx]= value
+				cpm[field].([]interface{})[idx]= value
 
 			}
 		}

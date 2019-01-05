@@ -20,6 +20,7 @@ func TestLoad2(t *testing.T) {
 	Marshal("$.class[1]",m,User{"wangwu",18})
 	Marshal("$.class[2]",m,User{"dajj",18})
 	log.Println(Marshal("$.class[5].name",m,"biaoge"))
+	log.Println(Marshal("$.class[5].age",m,23))
 	Marshal("$.group[5].age",m,12)
 	Marshal("$.group[5].son.son.name",m,"bgnb")
 	Marshal("$.group[5].son.son.age",m,33)
@@ -56,26 +57,35 @@ func TestMarshals(t *testing.T) {
 }
 
 func marshal()  {
-	tmp,err:=Marshals([]QueryProp{
+	_,err:=Marshals([]QueryProp{
 		{"$.biaoge.name","biaoge"},
-		{"$.biaoge.say","bgnb"},
-		{"$.dajj.name","dajj"},
-		{"$.dajj.say","dajj niubi"},
-		{"$.group[0]","biaoge"},
-		{"$.group[1]","dajj"},
-		{"$.group[2]","hg"},
-		//{"$.group[2].gg","hg"},
-		{"$.less[0].hgfs.had.pg[0].hhh[1].fs","hg"},
+		//{"$.biaoge.say","bgnb"},
+		//{"$.dajj.name","dajj"},
+		//{"$.dajj.say","dajj niubi"},
+		//{"$.group[0]","biaoge"},
+		//{"$.group[1]","dajj"},
+		//{"$.group[2]","hg"},
+		////{"$.group[2].gg","hg"},
+		//{"$.less[0].hgfs.had.pg[0].hhh[1].fs","hg"},
 	})
 	if err !=nil{
 		fmt.Println(err)
 		return
 	}
-	json.Marshal(tmp)
-	//fmt.Println(string(s))
+	//s,_:=json.Marshal(tmp)
+	//fmt.Sprintf(string(s))
 }
 func Test_bench(t *testing.T)  {
-	for i:=0;i<10000;i++{
+	for i:=0;i<1000000;i++{
 		marshal()
 	}
+}
+
+func TestNI(t *testing.T) {
+	var m = map[string]interface{}{}
+	log.Println(Marshal("$.s[0]",m,1))
+	log.Println(Marshal("$.s[1]",m,2))
+	log.Println(Marshal("$.s[2]",m,3))
+	s,_:=json.Marshal(m)
+	fmt.Println(string(s))
 }
