@@ -1,9 +1,11 @@
 package jsonref
 
 import (
-	"testing"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"log"
+	"testing"
+	"time"
 )
 
 type User struct {
@@ -17,7 +19,7 @@ func TestLoad2(t *testing.T) {
 	Marshal("$.class[0]",m,User{"lisi",11})
 	Marshal("$.class[1]",m,User{"wangwu",18})
 	Marshal("$.class[2]",m,User{"dajj",18})
-	Marshal("$.class[5].name",m,"biaoge")
+	log.Println(Marshal("$.class[5].name",m,"biaoge"))
 	Marshal("$.group[5].age",m,12)
 	Marshal("$.group[5].son.son.name",m,"bgnb")
 	Marshal("$.group[5].son.son.age",m,33)
@@ -48,6 +50,12 @@ func TestLoad(t *testing.T) {
 }
 
 func TestMarshals(t *testing.T) {
+	s:=time.Now()
+	marshal()
+	fmt.Println("time",time.Since(s).Nanoseconds())
+}
+
+func marshal()  {
 	tmp,err:=Marshals([]QueryProp{
 		{"$.biaoge.name","biaoge"},
 		{"$.biaoge.say","bgnb"},
@@ -63,6 +71,11 @@ func TestMarshals(t *testing.T) {
 		fmt.Println(err)
 		return
 	}
-	s,_:=json.Marshal(tmp)
-	fmt.Println(string(s))
+	json.Marshal(tmp)
+	//fmt.Println(string(s))
+}
+func Test_bench(t *testing.T)  {
+	for i:=0;i<10000;i++{
+		marshal()
+	}
 }

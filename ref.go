@@ -3,6 +3,8 @@ package jsonref
 import (
 	"errors"
 	"fmt"
+	"log"
+	"reflect"
 	"strings"
 	"strconv"
 	"encoding/json"
@@ -27,7 +29,7 @@ func MarshalToJson(query string,src map[string]interface{},dst interface{}) ([]b
 
 }
 
-func Marshal(query string,src map[string]interface{},dst interface{}) error {
+func Marshal(query string,src map[string]interface{}, value interface{}) error {
 	tks,err:=tokenize(query)
 	if err !=nil{
 		return err
@@ -41,7 +43,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 		if err!=nil{
 			return err
 		}
-		if k< len(tks)-1{
+		if k < len(tks)-1{
 			//field
 			if idx ==TYPE_KEY{
 				if cp[field]==nil{
@@ -57,6 +59,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 					cp[field]=make([]map[string]interface{},idx+1)
 				}
 				//arrmp:=cp[field].([]map[string]interface{})
+				log.Println(reflect.TypeOf(cp[field]))
 				cpm,ok:=cp[field].([]map[string]interface{})
 				if !ok{
 					return errors.New("caonnot convert to map")
@@ -77,7 +80,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 
 		}else{
 			if idx ==TYPE_KEY{
-				cp[field]=dst
+				cp[field]= value
 			}else{
 				//todo
 				if cp[field]==nil{
@@ -92,7 +95,7 @@ func Marshal(query string,src map[string]interface{},dst interface{}) error {
 						cp[field]= append(cp[field].([]interface{}),1)
 					}
 				}
-				cp[field].([]interface{})[idx]=dst
+				cp[field].([]interface{})[idx]= value
 
 			}
 		}
@@ -127,7 +130,7 @@ func yyp(token string)(string,int,error){
 			numidx_end=k
 		}
 	}
-	if numidx_end>0 && numidx_start>0{
+	if numidx_end>0 && numidx_start>=0{
 		num,err:=strconv.Atoi(token[numidx_start+1:numidx_end])
 		if err !=nil{
 			return "",TYPE_KEY,err
