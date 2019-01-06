@@ -1,7 +1,6 @@
 package jsonref
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -16,16 +15,6 @@ type QueryProp struct {
 const (
 	TYPE_KEY=-1
 )
-
-func MarshalToJson(query string,src map[string]interface{},dst interface{}) ([]byte,error) {
-	err:= Marshal(query,src,dst)
-	if err !=nil{
-		return nil,err
-	}
-
-	return json.Marshal(src)
-
-}
 
 func Marshal(query string,src interface{}, value interface{}) error {
 	tks,err:=tokenize(query)
