@@ -32,7 +32,12 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 				if field==""{
 					cps,ok:=cp.([]interface{})
 					if !ok{
-						return nil,errors.New("cannot convert to interface{}")
+						cpss,ok:=cp.([]map[string]interface{})
+						if !ok{
+							return nil,errors.New("cannot convert to interface{}")
+						}
+						cp = cpss[idx]
+						continue
 					}
 					cp = cps[idx]
 					continue
@@ -60,7 +65,11 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 				if field==""{
 					cps,ok:=cp.([]interface{})
 					if !ok{
-						return nil,errors.New("cannot convert to interface{}")
+						cpss,ok:=cp.([]map[string]interface{})
+						if !ok{
+							return nil,errors.New("cannot convert to interface{}")
+						}
+						return cpss[idx],nil
 					}
 					return cps[idx],nil
 				}

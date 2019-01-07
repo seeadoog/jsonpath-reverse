@@ -54,7 +54,6 @@ func TestLookup2(t *testing.T) {
 	log.Println(jsonpath.JsonPathLookup(i,"$[0]"))
 	log.Println(jsonpath.JsonPathLookup(i,"$[0].bege.cps[0].cp1[0].haha"))
 	log.Println(Lookup("[0]",i))
-	log.Println(Lookup("[2]",i))
 	log.Println(Lookup("[0].bege.cps[0].cp1[0].haha",i))
 }
 
@@ -89,4 +88,13 @@ func TestLookup3(t *testing.T) {
 	json.Unmarshal([]byte(s),&i)
 	log.Println(Lookup("$.bege.sd",i))
 	log.Println(Lookup("bege",i))
+}
+
+func TestMapp(t *testing.T) {
+	var a  = []map[string]interface{}{}
+	c(a)
+}
+
+func c(i interface{})  {
+	log.Println(i.([]interface{}))
 }
