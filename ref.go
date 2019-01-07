@@ -16,16 +16,21 @@ const (
 	TYPE_KEY=-1
 )
 
-func Marshal(query string,src interface{}, value interface{}) error {
-	tks,err:=tokenize(query)
+func MarshalWithoutRoot(query string,src interface{}, value interface{}) error {
+	return marshal(query,src,value,-1)
+}
+
+func Marshal(query string,src interface{}, value interface{})error{
+	return marshal(query,src,value,0)
+}
+
+func marshal(query string,src interface{}, value interface{},start int) error {
+	tks,err:=tokenize2(query)
 	if err !=nil{
 		return err
 	}
 	var cp = src
 	for k,v:=range tks{
-		if k==0{
-			continue
-		}
 		field,idx,err:=yyp(v)
 		if err!=nil{
 			return err
@@ -59,7 +64,7 @@ func Marshal(query string,src interface{}, value interface{}) error {
 				lenmap:=len(cps)
 				if lenmap<idx+1{
 					for i:=lenmap;i<idx+1;i++{
-						cpm[field]=append(cpm[field].([]interface{}),map[string]interface{}{})
+						cpm[field]=append(cpm[field].([]interface{}),nil)
 					}
 				}
 				for i:=0;i<idx+1;i++{
@@ -78,7 +83,6 @@ func Marshal(query string,src interface{}, value interface{}) error {
 				}
 				cpm[field]= value
 			}else{
-				//todo
 				if field==""{
 					return errors.New("field is nil")
 				}
@@ -92,7 +96,7 @@ func Marshal(query string,src interface{}, value interface{}) error {
 				}
 				if len(cps)<idx+1{
 					for i:=len(cpm[field].([]interface{}));i<idx+1;i++{
-						cpm[field]= append(cpm[field].([]interface{}),1)
+						cpm[field]= append(cpm[field].([]interface{}),nil)
 					}
 				}
 				cpm[field].([]interface{})[idx]= value
@@ -140,6 +144,10 @@ func yyp(token string)(string,int,error){
 	return token,TYPE_KEY,nil
 }
 
+
+func tokenize2(query string) ([]string, error){
+	return strings.Split(strings.Trim(query,"$."),"."),nil
+}
 
 func tokenize(query string) ([]string, error) {
 	tokens := []string{}

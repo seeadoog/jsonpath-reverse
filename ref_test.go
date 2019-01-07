@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"testing"
-	"time"
 )
 
 type User struct {
@@ -20,25 +19,27 @@ func TestLoad2(t *testing.T) {
 	Marshal("$.class[0]",m,User{"lisi",11})
 	Marshal("$.class[1]",m,User{"wangwu",18})
 	Marshal("$.class[2]",m,User{"dajj",18})
-	log.Println(Marshal("$.class[5].age",m,23))
+	log.Println(Marshal("$.class[3].age",m,23))
 	Marshal("$.group[5].age",m,12)
 	Marshal("$.group[5].son.son.name",m,"bgnb")
 	Marshal("$.group[5].son.son.age",m,33)
-
+	Marshal("$.nii.sss.ggg.hhh.jjj.kkk.ll.sss.mmm.ggg",m,23)
+    Marshal("$.nii.sss.ggg.hhh.jjj.kkk.ll.sss.mmm.ggg.ff",m,23)
+    Marshal("$.nii.sss.ggs[1].hhh[0].jjj[0].kkk[1].ll[2].sss.mmm.ggg.ff[1].ss[2]",m,"12")
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
 }
 
 func Test_yy(t *testing.T)  {
 	var m = map[string]interface{}{}
-	Marshal("$.ssd.sd",m,1)
-	Marshal("$.ssd.gf",m,1)
+	Marshal("ssd.sd",m,1)
+	Marshal("ssd.gf",m,2)
 	Marshal("$.sdf.fg",m,1)
 	Marshal("$.fg",m,1)
 	Marshal("$.sdfg[1].gh",m,1)
 	Marshal("$.sdfg[2].fg",m,1)
 	Marshal("$.sdf2[2].as",m,1)
-	Marshal("$.sdfl[0]",m,3)
+	Marshal("$.sdfl[2]",m,3)
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
 }
@@ -51,14 +52,14 @@ func TestLoad(t *testing.T) {
 }
 
 func TestMarshals(t *testing.T) {
-	s:=time.Now()
-	marshal()
-	fmt.Println("time",time.Since(s).Nanoseconds())
+	//s:=time.Now()
+	marshal1()
+	//fmt.Println("time",time.Since(s).Nanoseconds())
 }
 
-func marshal()  {
+func marshal1()  {
 	_,err:=Marshals([]QueryProp{
-		{"$.biaoge.name","biaoge"},
+		{"$.biaoge.name.sss[0].sdg","biaoge"},
 		//{"$.biaoge.say","bgnb"},
 		//{"$.dajj.name","dajj"},
 		//{"$.dajj.say","dajj niubi"},
@@ -77,7 +78,7 @@ func marshal()  {
 }
 func Test_bench(t *testing.T)  {
 	for i:=0;i<1000000;i++{
-		marshal()
+		marshal1()
 	}
 }
 

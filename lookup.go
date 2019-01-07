@@ -4,17 +4,18 @@ import (
 	"errors"
 )
 
+func JsonPathLookup(i interface{},path string) (interface{},error )  {
+	return Lookup(path,i)
+}
+
 func Lookup(query string,val interface{}) (interface{},error )  {
-	tokens,err:=tokenize(query)
+	tokens,err:=tokenize2(query)
 	if err !=nil{
 		return nil,err
 	}
 	//log.Println(tokens)
 	var cp = val
 	for k,v:=range tokens{
-		if k==0{
-			continue
-		}
 		field,idx,err:=yyp(v)
 		//log.Println(yyp(v))
 		if err !=nil{
