@@ -53,8 +53,8 @@ func there()  {
 func TestLookup2(t *testing.T) {
 	log.Println(jsonpath.JsonPathLookup(i,"$[0]"))
 	log.Println(jsonpath.JsonPathLookup(i,"$[0].bege.cps[0].cp1[0].haha"))
-	log.Println(Lookup("[0]",i))
-	log.Println(Lookup("[0].bege.cps[0].cp1[0].haha",i))
+	log.Println(Lookup("$[0]",i))
+	log.Println(Lookup("$[0].bege.cps[0].cp1[0].haha",i))
 }
 
 func Test_Token(t *testing.T)  {

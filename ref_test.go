@@ -25,21 +25,18 @@ func TestLoad2(t *testing.T) {
 	Marshal("$.group[5].son.son.age",m,33)
 	Marshal("$.nii.sss.ggg.hhh.jjj.kkk.ll.sss.mmm.ggg",m,23)
     Marshal("$.nii.sss.ggg.hhh.jjj.kkk.ll.sss.mmm.ggg.ff",m,23)
-    Marshal("$.nii.sss.ggs[1].hhh[0].jjj[0].kkk[1].ll[2].sss.mmm.ggg.ff[1].ss[2]",m,"12")
+    Marshal("$.nii.sss.ggs[1].hhh[0].jjj[0].kkk[1].ll[2].sss.mmm.ggg.ff[1].ss[0]",m,"12")
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
 }
 
 func Test_yy(t *testing.T)  {
 	var m = map[string]interface{}{}
-	Marshal("ssd.sd",m,1)
-	Marshal("ssd.gf",m,2)
-	Marshal("$.sdf.fg",m,1)
-	Marshal("$.fg",m,1)
-	Marshal("$.sdfg[1].gh",m,1)
-	Marshal("$.sdfg[2].fg",m,1)
-	Marshal("$.sdf2[2].as",m,1)
-	Marshal("$.sdfl[2]",m,3)
+	Marshal("$.result",m,map[string]interface{}{
+		"status2":2,
+	},)
+	Marshal("$.result.status",m,1)
+
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
 }
@@ -58,8 +55,12 @@ func TestMarshals(t *testing.T) {
 }
 
 func marshal1()  {
-	_,err:=Marshals([]QueryProp{
-		{"$.biaoge.name.sss[0].sdg","biaoge"},
+	tmp,err:=Marshals([]QueryProp{
+		//{"$.biaoge.name.sss[0].sdg","biaoge"},
+		{"$.result.status",1},
+		{"$.result",map[string]interface{}{
+			"status":2,
+		}},
 		//{"$.biaoge.say","bgnb"},
 		//{"$.dajj.name","dajj"},
 		//{"$.dajj.say","dajj niubi"},
@@ -73,8 +74,8 @@ func marshal1()  {
 		fmt.Println(err)
 		return
 	}
-	//s,_:=json.Marshal(tmp)
-	//fmt.Sprintf(string(s))
+	s,_:=json.Marshal(tmp)
+	fmt.Sprintf(string(s))
 }
 func Test_bench(t *testing.T)  {
 	for i:=0;i<1000000;i++{
@@ -89,4 +90,18 @@ func TestNI(t *testing.T) {
 	log.Println(Marshal("$.s[2]",m,3))
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
+}
+
+func TestInterface(t *testing.T) {
+	var i interface{}
+	inter(&i)
+	log.Println(i)
+}
+
+func inter(v interface{})  {
+	*v.(*interface{}) = map[string]interface{}{
+		"kk":"dsf",
+	}
+	var b = *v.((*interface{}))
+	b.(map[string]interface{})["sdf"]="sdf"
 }

@@ -2,6 +2,7 @@ package jsonref
 
 import (
 	"errors"
+	"fmt"
 )
 
 func JsonPathLookup(i interface{},path string) (interface{},error )  {
@@ -25,7 +26,7 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 			if idx == TYPE_KEY{
 				cpm,ok:=cp.(map[string]interface{})
 				if !ok{
-					return nil,errors.New("cannot convert to map")
+					return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert1 to map",field))
 				}
 				cp = cpm[field]
 			}else{
@@ -34,7 +35,7 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 					if !ok{
 						cpss,ok:=cp.([]map[string]interface{})
 						if !ok{
-							return nil,errors.New("cannot convert to interface{}")
+							return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert1 to array",field))
 						}
 						cp = cpss[idx]
 						continue
@@ -44,21 +45,21 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 				}
 				cpm,ok:=cp.(map[string]interface{})
 				if !ok{
-					return nil,errors.New("cannot convert to map")
+					return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert2 to map",field))
 				}
 				//log.Println(cpm[field],reflect.TypeOf(cpm[field]))
-				 cps,ok:=cpm[field].([]interface{})
-				 if !ok{
-				 	return nil,errors.New("caonnot convert to []map-")
-				 }
-				 cp =cps[idx]
+				cps,ok:=cpm[field].([]interface{})
+				if !ok{
+					return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert2 to array",field))
+				}
+				cp =cps[idx]
 			}
 		}else{
 			if idx == TYPE_KEY{
 
 				cpm,ok:=cp.(map[string]interface{})
 				if !ok{
-					return nil,errors.New("cannot convert to map.")
+					return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert3 to map",field))
 				}
 				return cpm[field],nil
 			}else{
@@ -67,7 +68,7 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 					if !ok{
 						cpss,ok:=cp.([]map[string]interface{})
 						if !ok{
-							return nil,errors.New("cannot convert to interface{}")
+							return nil,errors.New(fmt.Sprintf("read field failed ,%s cannot convert3 to array",field))
 						}
 						return cpss[idx],nil
 					}
@@ -75,11 +76,11 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 				}
 				cpm,ok:=cp.(map[string]interface{})
 				if !ok{
-					return nil,errors.New("cannot convert to map.")
+					return nil,errors.New(fmt.Sprintf("create field failed ,%s cannot convert4 to map",field))
 				}
 				cps,ok:=cpm[field].([]interface{})
 				if !ok{
-					return nil,errors.New("cannot convert to []interface{}")
+					return nil,errors.New(fmt.Sprintf("create field failed ,%s cannot convert4 to array",field))
 				}
 				return cps[idx],nil
 				return nil,nil
@@ -89,3 +90,4 @@ func Lookup(query string,val interface{}) (interface{},error )  {
 	}
 	return nil,nil
 }
+

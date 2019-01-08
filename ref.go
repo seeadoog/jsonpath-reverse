@@ -16,10 +16,7 @@ const (
 	TYPE_KEY=-1
 )
 
-func MarshalWithoutRoot(query string,src interface{}, value interface{}) error {
-	return marshal(query,src,value,-1)
-}
-
+// src must be map[string]interface{}
 func Marshal(query string,src interface{}, value interface{})error{
 	return marshal(query,src,value,0)
 }
@@ -40,18 +37,21 @@ func marshal(query string,src interface{}, value interface{},start int) error {
 			if idx ==TYPE_KEY{
 				cpm ,ok:= cp.(map[string]interface{})
 				if !ok{
-					return errors.New("cannot convert_ to map")
+					return errors.New(fmt.Sprintf("create field failed ,%s.parent cannot convert_ to map",field))
 				}
 				if cpm[field]==nil{
 					cpm[field]= map[string]interface{}{}
 				}
 				cpm,ok = cpm[field].(map[string]interface{})
 				if !ok{
-					return errors.New("cannot convert_ to map")
+					return errors.New(fmt.Sprintf("create field failed ,%s cannot convert_ to map",field))
 				}
 				cp = cpm
 			}else{   //array
-				cpm := cp.(map[string]interface{})
+				cpm,ok := cp.(map[string]interface{})
+				if !ok{
+					return errors.New("nil array child")
+				}
 				if cpm[field]==nil{
 					cpm[field]=make([]interface{},idx+1)
 				}
@@ -59,7 +59,7 @@ func marshal(query string,src interface{}, value interface{},start int) error {
 				//log.Println(reflect.TypeOf(cpm[field]))
 				cps,ok:=cpm[field].([]interface{})
 				if !ok{
-					return errors.New("caonnot convert to map")
+					return errors.New(fmt.Sprintf("create array failed ,%s cannot convert2 to array",field))
 				}
 				lenmap:=len(cps)
 				if lenmap<idx+1{
@@ -79,20 +79,23 @@ func marshal(query string,src interface{}, value interface{},start int) error {
 			if idx ==TYPE_KEY{
 				cpm,ok:=cp.(map[string]interface{})
 				if !ok{
-					return errors.New("cannot convert to map")
+					return errors.New(fmt.Sprintf("set val failed,%s is not map",field))
 				}
 				cpm[field]= value
 			}else{
 				if field==""{
-					return errors.New("field is nil")
+					return errors.New("cannot set val for array for empty name")
 				}
 				cpm,ok:=cp.(map[string]interface{})
+				if !ok{
+					return errors.New(fmt.Sprintf("set val failed ,%s cannot convert1 to map -",field))
+				}
 				if cpm[field]==nil{
 					cpm[field]=make([]interface{},idx+1)
 				}
 				cps,ok:=cpm[field].([]interface{})
 				if !ok{
-					return errors.New("cannot convert to interface")
+					return errors.New(fmt.Sprintf("set val failed,%s cannot convert3 to array",field))
 				}
 				if len(cps)<idx+1{
 					for i:=len(cpm[field].([]interface{}));i<idx+1;i++{
