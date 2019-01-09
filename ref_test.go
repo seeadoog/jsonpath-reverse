@@ -90,9 +90,10 @@ func Test_bench(t *testing.T)  {
 
 func TestNI(t *testing.T) {
 	var m = map[string]interface{}{}
-	log.Println(Marshal("$.s[0]",m,1))
-	log.Println(Marshal("$.s[1]",m,2))
-	log.Println(Marshal("$.s[2]",m,3))
+	log.Println(Marshal("$.s[0].a",m,1))
+	log.Println(Marshal("$.s[1].a",m,2))
+	log.Println(Marshal("$.s[2].a",m,3))
+	log.Println(Marshal("$.s[5].a",m,3))
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
 }
@@ -114,28 +115,55 @@ func inter(v interface{})  {
 
 func TestMarshals2(t *testing.T) {
 	var i interface{}
-	marshal2("$",&i,map[string]interface{}{
+	marshalInterface("$",&i,map[string]interface{}{
 		"keys":"234",
-	},-1)
-	marshal2("$.mapss",&i,map[string]interface{}{
+	})
+	marshalInterface("$.mapss",&i,map[string]interface{}{
 		"key":"234",
-	},-1)
-	marshal2("$.sdfs",&i,map[string]interface{}{
+	})
+	marshalInterface("$.sdfs",&i,map[string]interface{}{
 		"key":"234",
-	},-1)
-	marshal2("$.abc[0].bcd[1]",&i,map[string]interface{}{
+	})
+	marshalInterface("$.abc[0].bcd[1]",&i,map[string]interface{}{
 		"key":"234",
-	},-1)
-	marshal2("$.abc[0].bcd[0]",&i,map[string]interface{}{
+	})
+	marshalInterface("$.abc[0].bcd[0]",&i,map[string]interface{}{
 		"key":"234",
-	},-1)
+	})
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
 }
 
 func TestRoot(t *testing.T) {
 	var i interface{}
-	marshal2("$[0]",&i,1,-1)
+	marshalInterface("$",&i,map[string]interface{}{
+		"hha":"hha",
+	})
+	marshalInterface("$.ha",&i,1)
+	b,_:=json.Marshal(i)
+	fmt.Println(string(b))
+}
+
+func TestArr(t *testing.T)  {
+
+	var i interface{}
+	marshalInterface("$[0].abc.gf[2]",&i,&User{})
+	marshalInterface("$[0].abc.gf[1]",&i,&User{})
+	marshalInterface("$[1].abc.sss[0].fff",&i,&User{"sdf",3})
+	marshalInterface("$[5].abc.sss[0].fff",&i,&User{"sdf",3})
+//	marshalInterface("$[1]",&i,&User{},-1)
+	//marshalInterface("$[1].asss",&i,&User{},-1)
+	b,_:=json.Marshal(i)
+	fmt.Println(string(b))
+}
+func TestMap(t *testing.T) {
+	var i interface{}
+	marshalInterface("$[0].abc.gf[2]",&i,&User{})
+	marshalInterface("$[0].abc.gf[1]",&i,&User{})
+	marshalInterface("$[1].abc.sss[0].fff",&i,&User{"sdf",3})
+	marshalInterface("$[5].abc.sss[0].fff",&i,&User{"sdf",3})
+	//	marshalInterface("$[1]",&i,&User{},-1)
+	//marshalInterface("$[1].asss",&i,&User{},-1)
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
 }
