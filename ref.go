@@ -150,21 +150,26 @@ func parserToken(tks []string,cp,value interface{})error  {
 		if err!=nil{
 			return err
 		}
-		if k < len(tks)-1{
+		if k < len(tks){
 			//map
 			if idx ==TYPE_KEY{
 				cpm ,ok:= cp.(map[string]interface{})
 				if !ok{
 					return errors.New(fmt.Sprintf("create field failed ,%s.parent cannot convert_ to map",field))
 				}
-				if cpm[field]==nil{
-					cpm[field]= map[string]interface{}{}
+
+				if k<len(tks)-1{
+					if cpm[field]==nil{
+						cpm[field]= map[string]interface{}{}
+					}
+					cpm,ok = cpm[field].(map[string]interface{})
+					if !ok{
+						return errors.New(fmt.Sprintf("create field failed ,%s cannot convert_ to map",field))
+					}
+					cp = cpm
+				}else{
+					cpm[field]=value
 				}
-				cpm,ok = cpm[field].(map[string]interface{})
-				if !ok{
-					return errors.New(fmt.Sprintf("create field failed ,%s cannot convert_ to map",field))
-				}
-				cp = cpm
 			}else{   //array
 			    var cps []interface{}
 				if field==""{  //root array
@@ -190,12 +195,17 @@ func parserToken(tks []string,cp,value interface{})error  {
 						cps=append(cps,nil)
 					}
 				}
-				for i:=0;i<idx+1;i++{
-					if cps[i]==nil{
-						cps[i]=map[string]interface{}{}
+
+				if k < len(tks)-1{
+					for i:=0;i<idx+1;i++{
+						if cps[i]==nil{
+							cps[i]=map[string]interface{}{}
+						}
 					}
+					cp = cps[idx]
+				}else{
+					cps[idx]=value
 				}
-				cp = cps[idx]
 			}
 
 		}else{

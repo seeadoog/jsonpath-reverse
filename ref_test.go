@@ -15,6 +15,8 @@ type User struct {
 func TestLoad2(t *testing.T) {
 	var m = map[string]interface{}{}
 	Marshal("$.zhansan",m,User{"zhangsan",20})
+	Marshal("$.zhan[0]",m,1)
+	Marshal("$.zhan[1]",m,2)
 	log.Println(Marshal("$.class[5].name",m,"biaoge"))
 	Marshal("$.class[0]",m,User{"lisi",11})
 	Marshal("$.class[1]",m,User{"wangwu",18})
