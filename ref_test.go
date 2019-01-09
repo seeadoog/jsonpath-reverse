@@ -31,10 +31,13 @@ func TestLoad2(t *testing.T) {
 }
 
 func Test_yy(t *testing.T)  {
+
 	var m = map[string]interface{}{}
+
 	Marshal("$.result",m,map[string]interface{}{
 		"status2":2,
 	},)
+
 	Marshal("$.result.status",m,1)
 
 	s,_:=json.Marshal(m)
@@ -99,9 +102,38 @@ func TestInterface(t *testing.T) {
 }
 
 func inter(v interface{})  {
-	*v.(*interface{}) = map[string]interface{}{
+	i:=v.(*interface{})
+	*i= map[string]interface{}{
 		"kk":"dsf",
 	}
 	var b = *v.((*interface{}))
 	b.(map[string]interface{})["sdf"]="sdf"
+}
+
+func TestMarshals2(t *testing.T) {
+	var i interface{}
+	marshal2("$",&i,map[string]interface{}{
+		"keys":"234",
+	},-1)
+	marshal2("$.mapss",&i,map[string]interface{}{
+		"key":"234",
+	},-1)
+	marshal2("$.sdfs",&i,map[string]interface{}{
+		"key":"234",
+	},-1)
+	marshal2("$.abc[0].bcd[1]",&i,map[string]interface{}{
+		"key":"234",
+	},-1)
+	marshal2("$.abc[0].bcd[0]",&i,map[string]interface{}{
+		"key":"234",
+	},-1)
+	b,_:=json.Marshal(i)
+	fmt.Println(string(b))
+}
+
+func TestRoot(t *testing.T) {
+	var i interface{}
+	marshal2("$[0]",&i,1,-1)
+	b,_:=json.Marshal(i)
+	fmt.Println(string(b))
 }
