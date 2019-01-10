@@ -8,7 +8,7 @@ import (
 func JsonPathLookup(i interface{},path string) (interface{},error )  {
 	return Lookup(path,i)
 }
-
+//Deprecated
 func Lookup(query string,val interface{}) (interface{},error )  {
 	tokens,err:=tokenize2(query)
 	if err !=nil{

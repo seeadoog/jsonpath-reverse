@@ -119,16 +119,16 @@ func TestMarshals2(t *testing.T) {
 		"keys":"234",
 	})
 	marshalInterface("$.mapss",&i,map[string]interface{}{
-		"key":"234",
+		"key":"2341",
 	})
 	marshalInterface("$.sdfs",&i,map[string]interface{}{
-		"key":"234",
+		"key":"2342",
 	})
 	marshalInterface("$.abc[0].bcd[1]",&i,map[string]interface{}{
-		"key":"234",
+		"key":"2343",
 	})
 	marshalInterface("$.abc[0].bcd[0]",&i,map[string]interface{}{
-		"key":"234",
+		"key":"2344",
 	})
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
@@ -136,10 +136,13 @@ func TestMarshals2(t *testing.T) {
 
 func TestRoot(t *testing.T) {
 	var i interface{}
-	marshalInterface("$",&i,map[string]interface{}{
-		"hha":"hha",
-	})
-	marshalInterface("$.ha",&i,1)
+	for i:=0;i<10000001;i++{
+		marshalInterface("$",&i,map[string]interface{}{
+			"hha":"hha",
+		})
+	}
+
+	//marshalInterface("$.ha",&i,1)
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
 }
@@ -161,9 +164,57 @@ func TestMap(t *testing.T) {
 	marshalInterface("$[0].abc.gf[2]",&i,&User{})
 	marshalInterface("$[0].abc.gf[1]",&i,&User{})
 	marshalInterface("$[1].abc.sss[0].fff",&i,&User{"sdf",3})
-	marshalInterface("$[5].abc.sss[0].fff",&i,&User{"sdf",3})
+	marshalInterface("$[1].abc.sss[0].fff2",&i,&User{"sdf",3})
 	//	marshalInterface("$[1]",&i,&User{},-1)
 	//marshalInterface("$[1].asss",&i,&User{},-1)
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
+}
+
+func TestSwitchJson(t *testing.T) {
+data:=`
+{
+        "rlt": [
+            {
+                "sid": "F002_001.wav"
+            },
+            {
+                "age": [
+                    {
+                        "middle": "0.3180",
+                        "child": "0.4887",
+                        "old": "0.1933",
+                        "age_type": "1"
+                    }
+                ]
+            },
+            {
+                "gender": [
+                    {
+                        "female": "0.5933",
+                        "male": "0.4067",
+                        "gender_type": "0"
+                    }
+                ]
+            }
+        ]
+    }
+
+`
+    var its interface{}
+    json.Unmarshal([]byte(data),&its)
+    var res interface{}
+    err:=SwitchJson([]SwitchProp{
+    	{"$.age[0]","$.rlt[1].age[0]"},
+    	{"$.gender[0]","$.rlt[2].gender[0]"},
+    	{"$.sid[0].sid","$.rlt[0].sid"},
+	},&res,its)
+    log.Println(err)
+	//age,_:=Lookup("$.rlt[1].age[0]",its)
+	//marshalInterface("$.result.age",&i,age)
+	//gender,_:=Lookup("$.rlt[2].gender[0]",its)
+	//marshalInterface("$.result.gender",&i,gender)
+	b,_:=json.Marshal(res)
+	fmt.Println(string(b))
+
 }

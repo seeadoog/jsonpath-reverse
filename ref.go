@@ -12,13 +12,19 @@ type QueryProp struct {
 	Value interface{}
 }
 
+type SwitchProp struct {
+	SrcExp string
+	DataExp string
+
+}
+
 const (
 	TYPE_KEY=-1
 )
 
 // src must be map[string]interface{}
 // Marshal() do not support expression start with  $,$[0] .
-//if you need the function .please use MarshalInterface()
+//if you need this function ,please use MarshalInterface()
 func Marshal(query string,src interface{}, value interface{})error{
 	return marshal(query,src,value,0)
 }
@@ -43,6 +49,9 @@ func Marshals(querys []QueryProp)(tmp map[string]interface{} ,err error){
 
 }
 
+//differ the token is a field or array
+//return -1 and field name if token is field
+//return the idx of token and array name if token is array
 
 func yyp(token string)(string,int,error){
 	numidx_start:=0
@@ -73,7 +82,7 @@ func tokenize2(query string) ([]string, error){
 //marshal and set the value to interface{}
 //MarshalInterface() is power than Marshal().
 // MarshalInterface() support expression such as $ ,$[0] which  Marshal() doesn't support
-//attention that src must be *interface{}
+//attention that $src must be *interface{}
 func MarshalInterface(query string,src interface{}, value interface{}) error {
 	return marshalInterface(query,src,value)
 }
@@ -91,7 +100,7 @@ func marshalInterface(query string,src interface{}, value interface{}) error {
 			return nil
 		}
 		if _,ok:=(*cpi).(map[string]interface{});ok{
-
+			// do not handle
 		}else if _,ok:=(*cpi).([]interface{});ok{
 			cp = cpi
 			goto done
@@ -105,14 +114,14 @@ func marshalInterface(query string,src interface{}, value interface{}) error {
 
 			}else{
 				if yp!=""{
-					return errors.New("expression error: root array name must be empty,now is "+yp)
+					*cpi = map[string]interface{}{}
+				}else{
+					*cpi = make([]interface{},idx+1)
+					cp = cpi
+					goto done
 				}
-				*cpi = make([]interface{},idx+1)
-				cp = cpi
-				goto done
-			}
-			//cp=*cpi
 
+			}
 		}
 		cp = *cpi
 
@@ -121,6 +130,7 @@ done:
 	return parserToken(tks,cp,value)
 
 }
+
 func parserToken(tks []string,cp,value interface{})error  {
 	for k,v:=range tks{
 		field,idx,err:=yyp(v)
@@ -204,6 +214,21 @@ func parserToken(tks []string,cp,value interface{})error  {
 			}
 		}
 
+	}
+	return nil
+}
+//SwitchJson() can switch format of json from $data to $src by specific expression strings
+//attention that $src must be *interface{}
+func SwitchJson(exps []SwitchProp,src interface{},data interface{}) error {
+	for _,v:=range exps{
+		val,err:=Lookup(v.DataExp,data)
+		if err !=nil{
+			return err
+		}
+		err = marshalInterface(v.SrcExp,src,val)
+		if err !=nil{
+			return err
+		}
 	}
 	return nil
 }
