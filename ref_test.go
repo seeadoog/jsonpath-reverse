@@ -135,15 +135,15 @@ func TestMarshals2(t *testing.T) {
 }
 
 func TestRoot(t *testing.T) {
-	var i interface{}
-	for i:=0;i<10000001;i++{
-		marshalInterface("$",&i,map[string]interface{}{
+	var j interface{}
+	for i:=0;i<1000000;i++{
+		marshalInterface("$.a.b.c",&j,map[string]interface{}{
 			"hha":"hha",
 		})
 	}
 
 	//marshalInterface("$.ha",&i,1)
-	b,_:=json.Marshal(i)
+	b,_:=json.Marshal(j)
 	fmt.Println(string(b))
 }
 
@@ -161,10 +161,10 @@ func TestArr(t *testing.T)  {
 }
 func TestMap(t *testing.T) {
 	var i interface{}
-	marshalInterface("$[0].abc.gf[2]",&i,&User{})
-	marshalInterface("$[0].abc.gf[1]",&i,&User{})
-	marshalInterface("$[1].abc.sss[0].fff",&i,&User{"sdf",3})
-	marshalInterface("$[1].abc.sss[0].fff2",&i,&User{"sdf",3})
+	marshalInterface("$.abcd",&i,[]string{"123","456"})
+	marshalInterface("$.abc.gf[1]",&i,&User{})
+	marshalInterface("$.abc.sss[0].fff",&i,&User{"sdf",3})
+	marshalInterface("$.abc.sss[0].fff2",&i,&User{"sdf",3})
 	//	marshalInterface("$[1]",&i,&User{},-1)
 	//marshalInterface("$[1].asss",&i,&User{},-1)
 	b,_:=json.Marshal(i)
@@ -201,14 +201,14 @@ data:=`
     }
 
 `
-    var its interface{}
-    json.Unmarshal([]byte(data),&its)
+    var datas interface{}
+    json.Unmarshal([]byte(data),&datas)
     var res interface{}
-    err:=SwitchJson([]SwitchProp{
-    	{"$.age[0]","$.rlt[1].age[0]"},
-    	{"$.gender[0]","$.rlt[2].gender[0]"},
-    	{"$.sid[0].sid","$.rlt[0].sid"},
-	},&res,its)
+    err:=SwitchJson([]SwitchExp{
+    	{"$.a[0]","$.rlt[1].age[0]"},
+    	{"$.a[1]","$.rlt[2].gender[0]"},
+    	{"$.a[2]","$.rlt[0].sid"},
+	},&res,datas)
     log.Println(err)
 	//age,_:=Lookup("$.rlt[1].age[0]",its)
 	//marshalInterface("$.result.age",&i,age)
@@ -217,4 +217,21 @@ data:=`
 	b,_:=json.Marshal(res)
 	fmt.Println(string(b))
 
+}
+
+func TestLookup4(t *testing.T) {
+	var i interface{}
+	marshalInterface("$.a.b",&i,1)
+	marshalInterface("$.a.c.c",&i,2)
+
+	log.Println(Lookup("$.a.b",i))
+	log.Println(Lookup("$.a.c.c",i))
+}
+
+func TestMarshal(t *testing.T) {
+	var i interface{}
+	marshalInterface("$",&i,[]interface{}{"123456","123456"})
+	marshalInterface("$[2]",&i,"ddd")
+	b,_:=json.Marshal(i)
+	log.Println(string(b))
 }

@@ -32,13 +32,13 @@ type User struct {
 }
 
 func main() {
-	var m = map[string]interface{}{}
-	jsonref.Marshal("$.zhansan",m,User{"zhangsan",20})
-	jsonref.Marshal("$.class[0]",m,User{"lisi",11})
-	jsonref.Marshal("$.class[1]",m,User{"wangwu",18})
-	jsonref.Marshal("$.class[2]",m,User{"dajj",18})
-	jsonref.Marshal("$.group[5].name",m,"biaoge")
-	jsonref.Marshal("$.group[5].age",m,12)
+	var m = interface{}
+	jsonref.MarshalInterface("$.zhansan",&m,User{"zhangsan",20})
+	jsonref.MarshalInterface("$.class[0]",&m,User{"lisi",11})
+	jsonref.MarshalInterface("$.class[1]",&m,User{"wangwu",18})
+	jsonref.MarshalInterface("$.class[2]",&m,User{"dajj",18})
+	jsonref.MarshalInterface("$.group[5].name",&m,"biaoge")
+	jsonref.MarshalInterface("$.group[5].age",&m,12)
 
 	s,_:=json.Marshal(m)
 	fmt.Println(string(s))
