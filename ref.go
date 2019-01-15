@@ -20,7 +20,7 @@ type SwitchExp struct {
 const (
 	TYPE_KEY = -1
 )
-
+//update
 // src must be map[string]interface{}
 // Marshal() do not support expression start with  $,$[0] .
 //if you need this function ,please use MarshalInterface()

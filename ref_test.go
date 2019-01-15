@@ -169,6 +169,7 @@ func TestMap(t *testing.T) {
 	//marshalInterface("$[1].asss",&i,&User{},-1)
 	b,_:=json.Marshal(i)
 	fmt.Println(string(b))
+
 }
 
 func TestSwitchJson(t *testing.T) {
