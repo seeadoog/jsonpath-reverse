@@ -16,7 +16,7 @@
 
 - install
 ```text
-    go get -t github.com/skyniu/jsonref
+    go get -t github.com/skyniu/jsonpath-reverse
 ``` 
 
 - use 
