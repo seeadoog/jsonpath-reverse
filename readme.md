@@ -24,7 +24,7 @@
 import (
 	"fmt"
 	"encoding/json"
-	"github.com/skyniu/jsonref"
+	jsonref "github.com/skyniu/jsonpath-reverse"
 )
 type User struct {
 	Name string `json:"name"`
