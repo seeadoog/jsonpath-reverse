@@ -236,3 +236,33 @@ func TestMarshal(t *testing.T) {
 	b,_:=json.Marshal(i)
 	log.Println(string(b))
 }
+
+type Value interface {}
+
+type Map map[string]Value
+
+
+
+func TestAbstractController_ArgsError(t *testing.T) {
+	s:=`	
+{
+    "field": "$auf", 
+    "op": "IN", 
+    "val": [
+        "audio/L16;rate=16000", 
+        "audio/L16;rate=16k"
+    ], 
+    "result": {
+        "match": {
+            "field": "$rate", 
+            "op": "SET", 
+            "val": "16000"
+        }
+    }
+}
+
+`
+	var m = Map{}
+	json.Unmarshal([]byte(s),&m)
+	log.Println(m)
+}

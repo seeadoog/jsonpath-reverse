@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"fmt"
+	"regexp"
 )
 
 type QueryProp struct {
@@ -307,4 +308,11 @@ func tokenize(query string) ([]string, error) {
 	// fmt.Println("finished tokens: ", tokens)
 	// fmt.Println("================================================= done ")
 	return tokens, nil
+}
+
+
+//check that if rule is a valid rule
+var ruleRegexp= regexp.MustCompile(`\$(\[\d+\])?(\.\w+(\[\d+\])?)*$`)
+func checkRule(rule string) bool {
+	return ruleRegexp.MatchString(rule)
 }
